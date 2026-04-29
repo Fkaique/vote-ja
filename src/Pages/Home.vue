@@ -30,6 +30,7 @@ import pointer from '/assets/images/pointer.png'
 <style>
 .content {
     flex: 1;
+    text-align: center;
 }
 
 .section {

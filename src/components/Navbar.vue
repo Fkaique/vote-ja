@@ -11,13 +11,13 @@ defineProps<{
 <template>
     <div class="nav">
         <div class="leftNav">
-            <a href="#" class="item" v-for="item, i in left" :key="i">{{ item }}</a href="#">
+            <a href="#" class="item" v-for="item, i in left" :key="i">{{ item }}</a>
         </div>
         <div class="centerNav">
-            <a href="#" class="item" v-for="item, i in center" :key="i">{{ item }}</a href="#">
+            <a href="#" class="item" v-for="item, i in center" :key="i">{{ item }}</a>
         </div>
         <div class="rightNav">
-            <a href="#" class="item" v-for="item, i in right" :key="i">{{ item }}</a href="#">
+            <a href="#" class="item" v-for="item, i in right" :key="i">{{ item }}</a>
         </div>
     </div>
 </template>
