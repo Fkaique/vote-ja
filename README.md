@@ -29,3 +29,12 @@ Facilitar a alfabetização digital de idosos e novos eleitores, simulando o pro
 
 ## Acessibilidade
 Projeto desenvolvido seguindo diretrizes de alto contraste e legibilidade para o público idoso, utilizando a fonte **Open Sans** e paleta de cores de alta distinção.
+
+#
+
+## semana 1
+- ...
+## semana 2
+- ...
+## semana 3
+- ...
