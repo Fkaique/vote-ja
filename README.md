@@ -32,9 +32,25 @@ Projeto desenvolvido seguindo diretrizes de alto contraste e legibilidade para o
 
 #
 
-## semana 1
-- ...
-## semana 2
-- ...
-## semana 3
-- ...
+## Semana 1–2
+- [x] Estrutura Vue
+- [ ] Rotas (Home, Tutorial, Simulador)
+- [ ] Layout básico da urna
+## Semana 3–4
+- [ ] Implementar lógica:
+- [ ] digitação
+- [ ] validação
+- [ ] exibição candidato
+## Semana 5
+- [ ] Implementar:
+- [ ] confirmar
+- [ ] corrigir
+- [ ] voto branco
+- [ ] avanço de cargos
+## Semana 6
+- [ ] Tutorial dinâmico
+- [ ] Lista de candidatos
+## Semana 7 (final)
+- [ ] Ajustes de UI
+- [ ] Responsividade (celular)
+- [ ] Deploy (MUITO IMPORTANTE)
