@@ -2,55 +2,55 @@
 
 ![Status: Em Desenvolvimento](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange)
 
-Simulador de urna eletrônica focado em acessibilidade para as eleições de 2026. Este projeto foi desenvolvido como requisito acadêmico para [Nome da Disciplina] no **IFCE**.
+Simulador de urna eletrônica focado em acessibilidade para as eleições de 2026. Este projeto é um requisito acadêmico para a disciplina de Análise de Sistemas no **IFCE**.
 
-## Objetivo
-Facilitar a alfabetização digital de idosos e novos eleitores, simulando o processo de votação de forma intuitiva e segura.
+## Objetivo do MVP
+Desenvolver um simulador funcional até **18 de junho**, garantindo:
+- **Dois ciclos eleitorais:** Presidencial e Municipal.
+- **Tutorial dinâmico:** Orientação adaptável ao ciclo escolhido.
+- **Interface Realista:** Experiência visual e sonora semelhante à urna eletrônica.
+- **Acessibilidade:** Foco em legibilidade e alto contraste para idosos.
+
+## 📋 Requisitos Funcionais (Principais)
+- **RF01**: O sistema deve permitir a escolha entre Ciclo Municipal e Federal.
+- **RF02**: O sistema deve validar o número do candidato conforme o cargo atual.
+- **RF03**: O sistema deve emitir feedback sonoro ao finalizar o voto.
 
 ## Tecnologias
-* **Vite + Vue.js**: Framework moderno para uma SPA (Single Page Application) rápida.
-* **TypeScript**: Segurança no desenvolvimento e melhor manutenção do código.
-* **Pnpm**: Gerenciador de pacotes eficiente.
-* **UnoCSS**: Utilizado pontualmente para a aplicação de reset CSS (normalização de estilos), garantindo consistência visual entre diferentes navegadores.
-
-## Como rodar o projeto
-1. Instale as dependências: `pnpm install`
-2. Inicie o servidor: `pnpm dev`
-
-## Páginas
-- [ ] **Home**: (Em desenvolvimento): Página inicial com apresentação e chamada para o simulador.
-- [ ] **Simulador**: (Em desenvolvimento): Interface da urna eletrônica.
-- [ ] **Tutorial**: (Em desenvolvimento) Guia interativo passo a passo para ambientar o usuário antes da votação real.
-
-
-## Componentes
-- **Navbar**: Menu de navegação superior.
-- **Footer**: Rodapé com informações institucionais.
+* **Vite + Vue 3 + TypeScript**
+* **pnpm** (Gerenciador de pacotes)
+* **Vue Router** (Navegação)
+* **UnoCSS** (Estilização e Reset)
 
 ## Acessibilidade
+
 Projeto desenvolvido seguindo diretrizes de alto contraste e legibilidade para o público idoso, utilizando a fonte **Open Sans** e paleta de cores de alta distinção.
 
-#
+## Cronograma de Desenvolvimento
 
-## Semana 1–2
-- [x] Estrutura Vue
-- [ ] Rotas (Home, Tutorial, Simulador)
-- [ ] Layout básico da urna
-## Semana 3–4
-- [ ] Implementar lógica:
-- [ ] digitação
-- [ ] validação
-- [ ] exibição candidato
-## Semana 5
-- [ ] Implementar:
-- [ ] confirmar
-- [ ] corrigir
-- [ ] voto branco
-- [ ] avanço de cargos
-## Semana 6
-- [ ] Tutorial dinâmico
-- [ ] Lista de candidatos
-## Semana 7 (final)
-- [ ] Ajustes de UI
-- [ ] Responsividade (celular)
-- [ ] Deploy (MUITO IMPORTANTE)
+### Fase 1: Fundação (Semanas 1-2)
+- [x] Setup do projeto (Vite/TS/pnpm).
+- [ ] Configuração de rotas e estrutura de pastas.
+- [ ] Componente `Urna.vue` com teclado interativo.
+
+### Fase 2: Lógica e Dados (Semanas 3-4)
+- [ ] Implementação de entrada de números e busca de candidatos (mock).
+- [ ] Validação de votos (Nominal, Nulo, Branco).
+- [ ] Fluxo de confirmação e correção.
+
+### Fase 3: Ciclos e Tutorial (Semanas 5-6)
+- [ ] Alternância entre Ciclo Presidencial e Municipal.
+- [ ] Desenvolvimento do tutorial interativo.
+- [ ] Lista de consulta de candidatos.
+
+### Fase 4: Refinamento e Entrega (Semana 7)
+- [ ] Polimento de UI/UX (Acessibilidade Mobile-First).
+- [ ] Implementação do feedback sonoro.
+- [ ] **Deploy final e link público**.
+
+## Como rodar
+
+1. Instale as dependências: `pnpm install`.
+2. Inicie o servidor: `pnpm dev`.
+
+#### Acesse o sistema online: https://vote-ja.vercel.app
