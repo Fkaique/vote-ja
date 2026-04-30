@@ -11,7 +11,7 @@ Desenvolver um simulador funcional até **18 de junho**, garantindo:
 - **Interface Realista:** Experiência visual e sonora semelhante à urna eletrônica.
 - **Acessibilidade:** Foco em legibilidade e alto contraste para idosos.
 
-## 📋 Requisitos Funcionais (Principais)
+## Requisitos Funcionais (Principais)
 - **RF01**: O sistema deve permitir a escolha entre Ciclo Municipal e Federal.
 - **RF02**: O sistema deve validar o número do candidato conforme o cargo atual.
 - **RF03**: O sistema deve emitir feedback sonoro ao finalizar o voto.
