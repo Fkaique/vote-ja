@@ -30,8 +30,8 @@ Projeto desenvolvido seguindo diretrizes de alto contraste e legibilidade para o
 
 ### Fase 1: Fundação (Semanas 1-2)
 - [x] Setup do projeto (Vite/TS/pnpm).
-- [ ] Configuração de rotas e estrutura de pastas.
-- [ ] Componente `Urna.vue` com teclado interativo.
+- [x] Configuração de rotas e estrutura de pastas.
+- [x] Componente `Urna.vue` com teclado interativo.
 
 ### Fase 2: Lógica e Dados (Semanas 3-4)
 - [ ] Implementação de entrada de números e busca de candidatos (mock).
