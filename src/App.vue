@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="body">
+  <div class="body tema tema--claro">
     <router-view />
   </div>
 </template>
