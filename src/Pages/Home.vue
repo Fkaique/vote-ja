@@ -21,13 +21,16 @@ import pointer from '/assets/images/pointer.png'
             <Button>Iniciar Simulação
                 <img class="pointer" :src="pointer" alt="pointer image">
             </Button>
-            
         </div>
+        
     </div>
     <Footer />
 </template>
 
 <style>
+
+
+
 .content {
     flex: 1;
     text-align: center;
