@@ -17,20 +17,19 @@ import pointer from '/assets/images/pointer.png'
             <h1 class="h1">Treinar seu Voto nunca foi tão fácil</h1>
             <h2 class="h2">100% educacional</h2>
         </div>
+        <router-link to="/simulator">
         <div class="section s3">
-            <Button>Iniciar Simulação
-                <img class="pointer" :src="pointer" alt="pointer image">
-            </Button>
-        </div>
-        
+                <Button>Iniciar Simulação
+                    <img class="pointer" :src="pointer" alt="pointer image">
+                </Button>
+            </div>
+        </router-link>
+
     </div>
     <Footer />
 </template>
 
 <style>
-
-
-
 .content {
     flex: 1;
     text-align: center;
@@ -56,7 +55,7 @@ import pointer from '/assets/images/pointer.png'
     justify-content: center;
 }
 
-.s3 > Button {
+.s3>Button {
     position: relative;
     background-color: var(--color-background-contrast);
     justify-content: center;
@@ -69,7 +68,7 @@ import pointer from '/assets/images/pointer.png'
     max-width: 60px;
     bottom: 0px;
     right: 0px;
-    transform: translate(20px,25px);
+    transform: translate(20px, 25px);
 }
 
 .favicon {
