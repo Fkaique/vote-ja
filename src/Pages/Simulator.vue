@@ -1,53 +1,117 @@
+<!-- src/Pages/Simulator.vue -->
 <script setup lang="ts">
-import { ref } from 'vue';
-import Urna from '../components/Urna/Urna.vue';
+import { onMounted, onUnmounted } from 'vue'
+import { useUrna } from '@/composables/useUrna'
+import { cargos } from '@/data/candidatos'
 
-const numeroDigitado = ref('');
+import Display       from '@/components/Urna/Display.vue'
+import Urna          from '@/components/Urna/Urna.vue'
+import ActionButtons from '@/components/Urna/ActionButtons.vue'
+import StageInfo     from '@/components/Urna/StageInfo.vue'
+import ResultScreen  from '@/components/Urna/ResultScreen.vue'
 
-function handleDigit(n: number) {
-    if (numeroDigitado.value.length < 5) {
-        numeroDigitado.value += n.toString();
-    }
-}
+const {
+  etapaAtual,
+  digitado,
+  votos,
+  votoBranco,
+  finalizado,
+  cargoAtual,
+  candidatoAtual,
+  tipoVoto,
+  prontoParaConfirmar,
+  digitarNumero,
+  corrigir,
+  marcarBranco,
+  confirmar,
+  reiniciar,
+  iniciarTeclado,
+  pararTeclado,
+} = useUrna()
 
+onMounted(iniciarTeclado)
+onUnmounted(pararTeclado)
 </script>
 
 <template>
-    <div class="containerUrna">
-        <div class="painel">
-            <div class="display-numero">
-                {{ numeroDigitado }}
-            </div>
+  <div class="simulator">
+
+    <!-- Tela final -->
+    <ResultScreen
+      v-if="finalizado"
+      :votos="votos"
+      @reiniciar="reiniciar"
+    />
+
+    <!-- Votação em andamento -->
+    <template v-else>
+
+      <StageInfo
+        :cargos="cargos"
+        :etapa-atual="etapaAtual"
+      />
+
+      <div class="simulator__urna">
+
+        <Display
+          :digitado="digitado"
+          :digitos="cargoAtual.digitos"
+          :branco="votoBranco"
+          :candidato="candidatoAtual"
+          :tipo-voto="tipoVoto"
+          :cargo="cargoAtual.nome"
+        />
+
+        <div class="simulator__teclado">
+          <Urna @digit-pressed="digitarNumero" />
+
+          <ActionButtons
+            :pronto-para-confirmar="prontoParaConfirmar"
+            @branco="marcarBranco"
+            @corrige="corrigir"
+            @confirma="confirmar"
+          />
         </div>
-        <div class="urna">
-            <Urna @digit-pressed="handleDigit" />
-        </div>
-    </div>
+
+      </div>
+
+    </template>
+
+  </div>
 </template>
 
-<style>
-
-.containerUrna {
-    display: flex;
+<style scoped>
+.simulator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 16px;
 }
 
-.urna {
-    display: flex;
-    width: 500px;
-    height: 500px;
-    background-color: var(--color-text);
-    padding: 40px 60px;
-    font-size: 3rem;
+.simulator__urna {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  background-color: var(--color-cinza-1);
+  border-radius: 10px;
+  padding: 16px;
 }
 
-.painel {
-    width: 300px;
-    height: 100px;
-    background-color: #f0f0f0;
-    border: 2px solid #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
+.simulator__teclado {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .simulator__urna {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

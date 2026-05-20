@@ -1,4 +1,4 @@
-export class Keyoard {
+export class Keyboard {
     #keys: Set<string> = new Set()
     #presseds: Set<string> = new Set()
 
