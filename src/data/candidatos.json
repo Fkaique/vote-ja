@@ -1,0 +1,44 @@
+{
+    "candidatos": [
+        {
+            "id": 1,
+            "name": "Ana Silva",
+            "numero": 12345,
+            "partido": "PLIN",
+            "fotoUrl": "./ana_silva.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 2,
+            "name": "Carlos Eduardo",
+            "numero": 45678,
+            "partido": "PDS",
+            "fotoUrl": "./carlos_eduardo.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 3,
+            "name": "Marina Souza",
+            "numero": 77123,
+            "partido": "FUTURO",
+            "fotoUrl": "./marina_souza.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 4,
+            "name": "Ricardo Santos",
+            "numero": 90123,
+            "partido": "PFC",
+            "fotoUrl": "./ricardo_santos.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 5,
+            "name": "Beatriz Lima",
+            "numero": 23456,
+            "partido": "ECO",
+            "fotoUrl": "./beatriz_lima.png",
+            "cargo": "presidente"
+        }
+    ]
+}
