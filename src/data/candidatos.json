@@ -1,0 +1,36 @@
+{
+    "candidatos": [
+        {
+            "id": 1,
+            "name": "Ana Silva",
+            "numero": 88,
+            "partido": "MSFF",
+            "fotoUrl": "./ana_silva.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 2,
+            "name": "Henrique Vasconcelos",
+            "numero": 45,
+            "partido": "PCFCA",
+            "fotoUrl": "./carlos_eduardo.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 4,
+            "name": "Eduardo Farias",
+            "numero": 25,
+            "partido": "FNCD",
+            "fotoUrl": "./ricardo_santos.png",
+            "cargo": "presidente"
+        },
+        {
+            "id": 5,
+            "name": "Camila Andrade",
+            "numero": 19,
+            "partido": "UBA2N",
+            "fotoUrl": "./beatriz_lima.png",
+            "cargo": "presidente"
+        }
+    ]
+}
