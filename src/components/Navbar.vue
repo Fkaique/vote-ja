@@ -1,40 +1,75 @@
 <script setup lang="ts">
+// Definindo a estrutura de cada link para o TypeScript
+interface NavLink {
+    text: string;
+    path: string;
+}
 
 defineProps<{
-    left?: string[],
-    center?: string[],
-    right?: string[]
+    left?: NavLink[],
+    center?: NavLink[],
+    right?: NavLink[]
 }>()
 
+// Função utilitária para checar se o caminho é um link externo (http/https)
+const isExternal = (path: string) => path.startsWith('http://') || path.startsWith('https://');
 </script>
 
 <template>
-    <div class="nav">
+    <nav class="nav">
+        <!-- Lado Esquerdo -->
         <div class="leftNav">
-            <a href="#" class="item" v-for="item, i in left" :key="i">{{ item }}</a>
+            <template v-for="item, i in left" :key="'left-' + i">
+                <a v-if="isExternal(item.path)" :href="item.path" class="item">{{ item.text }}</a>
+                <RouterLink v-else :to="item.path" class="item">{{ item.text }}</RouterLink>
+            </template>
         </div>
+
+        <!-- Centro -->
         <div class="centerNav">
-            <a href="#" class="item" v-for="item, i in center" :key="i">{{ item }}</a>
+            <template v-for="item, i in center" :key="'center-' + i">
+                <a v-if="isExternal(item.path)" :href="item.path" class="item">{{ item.text }}</a>
+                <RouterLink v-else :to="item.path" class="item">{{ item.text }}</RouterLink>
+            </template>
         </div>
+
+        <!-- Lado Direito -->
         <div class="rightNav">
-            <a href="#" class="item" v-for="item, i in right" :key="i">{{ item }}</a>
+            <template v-for="item, i in right" :key="'right-' + i">
+                <a v-if="isExternal(item.path)" :href="item.path" class="item">{{ item.text }}</a>
+                <RouterLink v-else :to="item.path" class="item">{{ item.text }}</RouterLink>
+            </template>
         </div>
-    </div>
+    </nav>
 </template>
 
-<style>
+<style scoped>
 .nav {
     display: flex;
     justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.nav >* {
+.nav > * {
     flex: 1;
     display: flex;
     align-items: center;
+    gap: 20px;
 }
+
+.item {
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s;
+}
+
+.item:hover {
+    opacity: 0.8;
+}
+
 .leftNav {
-    justify-content: start;
+    justify-content: flex-start;
     font-size: 1.5rem;
 }
 
@@ -44,8 +79,7 @@ defineProps<{
 }
 
 .rightNav {
-    justify-content: end;
+    justify-content: flex-end;
     font-size: 1.5rem;
 }
-
 </style>

@@ -7,7 +7,7 @@ import pointer from '/assets/images/pointer.png';
 </script>
 
 <template>
-  <Navbar :center="['Home']" />
+  <Navbar :center="[{text: 'Inicio', path: '/'}, {text: 'Simulador', path: '/simulator'}]" />
   
   <main class="home-wrapper">
     <div class="hero-container">

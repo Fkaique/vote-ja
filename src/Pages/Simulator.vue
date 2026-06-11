@@ -35,7 +35,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 </script>
 
 <template>
-  <Navbar :center="['Simulador']" />
+  <Navbar :center="[{text: 'Inicio', path: '/'}, {text: 'Simulador', path: '/simulator'}]" />
   
   <main class="simulation-screen">
     <!-- Menu Suspenso (Overlay Modal) do Tutorial -->
