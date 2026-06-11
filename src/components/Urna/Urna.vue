@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import ButtonNumber from './ButtonNumber.vue';
 import ConfirmButton from './ConfirmButton.vue';
 
-import candidatosData from '/src/data/candidatos.json';
+import candidatosData from '../../data/candidatos.json';
 
 interface Candidato {
     id: number;

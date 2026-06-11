@@ -2,35 +2,147 @@
     "candidatos": [
         {
             "id": 1,
-            "name": "Ana Silva",
-            "numero": 88,
-            "partido": "MSFF",
-            "fotoUrl": "./ana_silva.png",
-            "cargo": "presidente"
-        },
-        {
-            "id": 2,
             "name": "Henrique Vasconcelos",
             "numero": 45,
             "partido": "PCFCA",
-            "fotoUrl": "./carlos_eduardo.png",
-            "cargo": "presidente"
+            "slogan": "Trabalho sério, mas sem perder o café.",
+            "fotoUrl": "./henrique_vasconcelos.png",
+            "cargo": "Presidente"
         },
         {
-            "id": 4,
+            "id": 2,
             "name": "Eduardo Farias",
             "numero": 25,
             "partido": "FNCD",
-            "fotoUrl": "./ricardo_santos.png",
-            "cargo": "presidente"
+            "slogan": "União, família e farofa.",
+            "fotoUrl": "./eduardo_farias.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 3,
+            "name": "Camila Andrade",
+            "numero": 19,
+            "partido": "UBA2M",
+            "slogan": "Objetividade para mudar o país.",
+            "fotoUrl": "./camila_andrade.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 4,
+            "name": "Thiago Martins",
+            "numero": 1212,
+            "partido": "PMR",
+            "slogan": "Partido do Meme Responsável (PMR)",
+            "fotoUrl": "./thiago_martins.png",
+            "cargo": "Presidente"
         },
         {
             "id": 5,
-            "name": "Camila Andrade",
-            "numero": 19,
-            "partido": "UBA2N",
-            "fotoUrl": "./beatriz_lima.png",
-            "cargo": "presidente"
+            "name": "Leonardo Barros",
+            "numero": 88,
+            "partido": "MSFF",
+            "slogan": "Agora vai.",
+            "fotoUrl": "./leonardo_barros.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 6,
+            "name": "Roberto Nogueira",
+            "numero": 404,
+            "partido": "PNWL",
+            "slogan": "Não encontrado.",
+            "fotoUrl": "./roberto_nogueira.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 7,
+            "name": "Fernanda Queiroz",
+            "numero": 707,
+            "partido": "ADBP",
+            "slogan": "Aliança Democrática do Boleto Pago.",
+            "fotoUrl": "./fernanda_queiroz.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 8,
+            "name": "Aline Ribeiro",
+            "numero": 9090,
+            "partido": "UNSAF",
+            "slogan": "União Nacional da Sombra e Água Fresca (UNSAF)",
+            "fotoUrl": "./aline_ribeiro.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 9,
+            "name": "Gabriel Moraes",
+            "numero": 44,
+            "partido": "PUCS",
+            "slogan": "Mais recheio para o povo.",
+            "fotoUrl": "./gabriel_moraes.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 10,
+            "name": "Larissa Campos",
+            "numero": 66,
+            "partido": "MMRO",
+            "slogan": "Planejar também é diversão.",
+            "fotoUrl": "./larissa_campos.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 11,
+            "name": "Vinícius Almeida",
+            "numero": 39,
+            "partido": "FBPQ",
+            "slogan": "Todo bairro merece padaria boa.",
+            "fotoUrl": "./vinicius_almeida.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 12,
+            "name": "Marcelo Duarte",
+            "numero": 7777,
+            "partido": "FPPST",
+            "slogan": "Frente Popular do Pix Sem Taxa (FPPST)",
+            "fotoUrl": "./marcelo_duarte.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 13,
+            "name": "Rafael Costa",
+            "numero": 3113,
+            "partido": "LEJ",
+            "slogan": "Liga do Estacionamento Justo.",
+            "fotoUrl": "./rafael_costa.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 14,
+            "name": "Bianca Fernandes",
+            "numero": 45454,
+            "partido": "PFA",
+            "slogan": "Partido da Fila que Anda.",
+            "fotoUrl": "./bianca_fernandes.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 15,
+            "name": "João Guilherme",
+            "numero": 17171,
+            "partido": "UBCAL",
+            "slogan": "União Brasileira Contra o Áudio Longo.",
+            "fotoUrl": "./joao_guilherme.png",
+            "cargo": "Presidente"
+        },
+        {
+            "id": 16,
+            "name": "Natália Moreira",
+            "numero": 80808,
+            "partido": "MNAG",
+            "slogan": "Movimento Nacional do Ar-Condicionado Geladinho (MNAG)",
+            "fotoUrl": "./natalia_moreira.png",
+            "cargo": "Presidente"
         }
     ]
 }
