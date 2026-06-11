@@ -5,7 +5,6 @@ import Navbar from '../components/Navbar.vue';
 import Footer from '../components/Footer.vue';
 import VoterTutorial from '../components/VoterTutorial.vue';
 
-// Buscando os dados dos candidatos para listar na colinha lateral
 import candidatosData from '../data/candidatos.json';
 
 interface Candidato {
@@ -16,10 +15,8 @@ interface Candidato {
     cargo: string;
 }
 
-// Controle de visibilidade do menu suspenso do tutorial
 const showTutorial = ref(false);
 
-// Abre o tutorial automaticamente quando o usuário entra na página
 onMounted(() => {
     showTutorial.value = true;
 });
@@ -32,7 +29,6 @@ function closeTutorial() {
     showTutorial.value = false;
 }
 
-// Extraindo a lista tratada de candidatos
 const candidatos: Candidato[] = Array.isArray(candidatosData) 
   ? candidatosData 
   : (candidatosData as any).candidatos || [];
@@ -119,12 +115,12 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 24px;
+    padding: 24px 16px; /* Reduzido para não espremer telas pequenas */
     width: 100%;
     max-width: 1300px;
     margin: 0 auto;
     box-sizing: border-box;
-    gap: 32px;
+    gap: 24px;
 }
 
 /* Camada escura de fundo do Menu Suspenso (Modal) */
@@ -132,14 +128,14 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7); /* Backdrop escuro fosco */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999; /* Garante que fica por cima de absolutamente tudo */
-    padding: 24px;
+    z-index: 9999;
+    padding: 12px; /* Espaço mínimo para celulares pequenos */
     box-sizing: border-box;
 }
 
@@ -147,10 +143,11 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 .tutorial-modal-box {
     width: 100%;
     max-width: 900px;
-    height: 85vh; /* Ocupa quase toda a altura da tela */
+    /* Ajustado para max-height fluido, evitando que transborde do viewport */
+    max-height: calc(100vh - 24px); 
     background-color: var(--color-background);
     border-radius: 12px;
-    overflow: hidden;
+    overflow-y: auto; /* Permite scroll se o tutorial interno for longo */
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     animation: modal-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -170,17 +167,18 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 .simulation-header {
     text-align: center;
     width: 100%;
+    padding: 0 8px;
 }
 
 .sim-title {
-    font-size: 2.2rem;
+    font-size: clamp(1.6rem, 5vw, 2.2rem); /* Tamanho de fonte fluido */
     font-family: var(--font-heading);
     color: var(--color-text);
     margin: 0 0 8px 0;
 }
 
 .sim-subtitle {
-    font-size: 1.1rem;
+    font-size: clamp(0.9rem, 3vw, 1.1rem); /* Subtítulo fluido */
     color: var(--color-text);
     opacity: 0.8;
     margin: 0;
@@ -189,17 +187,10 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 /* Layout Estrutural */
 .simulation-layout {
     display: grid;
-    grid-template-columns: 1.4fr 0.6fr;
-    gap: 40px;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 32px;
     width: 100%;
     align-items: start;
-}
-
-@media (max-width: 1024px) {
-    .simulation-layout {
-        grid-template-columns: 1fr;
-        gap: 32px;
-    }
 }
 
 /* A Cabine de Votação */
@@ -207,6 +198,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     width: 100%;
     display: flex;
     justify-content: center;
+    overflow: hidden; /* Evita vazamento de componentes filhos absolutos */
 }
 
 .booth-shield {
@@ -214,7 +206,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     border: 2px solid var(--color-titanium-2);
     border-radius: 16px;
     width: 100%;
-    padding: 30px;
+    padding: 30px 20px 20px 20px; /* Aliviado os paddings */
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
     position: relative;
     box-sizing: border-box;
@@ -224,13 +216,13 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     display: flex;
     gap: 8px;
     position: absolute;
-    top: 14px;
+    top: 12px;
     left: 20px;
 }
 
 .booth-top-bar .dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background-color: var(--color-titanium-3);
     border-radius: 50%;
 }
@@ -238,6 +230,8 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 .urna-wrapper {
     margin-top: 10px;
     width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 /* Barra Lateral de Controles e Ajuda */
@@ -255,8 +249,8 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     border: none;
     font-family: var(--font-heading);
     font-weight: bold;
-    font-size: 1.05rem;
-    padding: 16px;
+    font-size: 1rem;
+    padding: 14px;
     border-radius: 10px;
     cursor: pointer;
     display: flex;
@@ -272,35 +266,27 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
-.btn-reopen-tutorial:active {
-    transform: translateY(0);
-}
-
-.icon-book {
-    font-size: 1.2rem;
-}
-
 /* Cartão de Cola Eleitoral */
 .voter-help-card {
     background-color: var(--color-background);
     border: 2px dashed var(--color-secondary);
     border-radius: 12px;
-    padding: 24px;
+    padding: 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
 }
 
 .card-header h3 {
     font-family: var(--font-heading);
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: var(--color-text);
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
 }
 
 .card-header p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--color-text);
     opacity: 0.75;
     margin: 0;
@@ -310,30 +296,30 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 .candidates-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-height: 400px;
+    gap: 10px;
+    max-height: 320px;
     overflow-y: auto;
-    padding-right: 6px;
+    padding-right: 4px;
 }
 
 .candidate-sticky {
     background-color: var(--color-secondary);
     color: var(--color-text);
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    border-left: 5px solid var(--color-primary);
+    gap: 8px;
+    border-left: 4px solid var(--color-primary);
 }
 
 .cand-cargo {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: bold;
     text-transform: uppercase;
     background-color: var(--color-background);
-    padding: 4px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
     font-family: var(--font-mono);
 }
@@ -342,33 +328,67 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-width: 0; /* Evita que o texto quebre o flex box */
 }
 
 .cand-name {
     font-weight: bold;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Bota "..." se o nome for gigante */
 }
 
 .cand-party {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     opacity: 0.75;
 }
 
 .cand-number-badge {
     font-family: var(--font-mono);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
     color: var(--color-primary);
     background-color: var(--color-background);
-    padding: 4px 10px;
+    padding: 2px 8px;
     border-radius: 6px;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .no-data {
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     opacity: 0.6;
-    padding: 20px 0;
+    padding: 16px 0;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES - Ajustes Finos para Telas Pequenas e Mobile
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .simulation-layout {
+        grid-template-columns: 1fr; /* Força colunas empilhadas */
+        gap: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .simulation-screen {
+        padding: 16px 8px;
+        gap: 16px;
+    }
+    
+    .booth-shield {
+        padding: 24px 10px 12px 10px; /* Reduz tamanho da cabine no celular */
+        border-radius: 10px;
+    }
+
+    .candidate-sticky {
+        padding: 8px 10px;
+    }
+
+    .cand-name {
+        font-size: 0.85rem;
+    }
 }
 </style>
