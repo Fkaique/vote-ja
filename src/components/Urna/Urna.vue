@@ -12,18 +12,14 @@ interface Candidato {
     partido: string;
     fotoUrl: string;
     cargo: string;
+    slogan?: string;
 }
 
 const numeroDigitado = ref('');
 const candidatoSelecionado = ref<Candidato | null>(null);
 const votoEmBranco = ref(false);
 
-function handleDigit(n: number) {
-    if (numeroDigitado.value.length < 5) {
-        numeroDigitado.value += n.toString();
-    }
-}
-
+// Importação dinâmica das fotos dos candidatos
 const imagensCandidatos = import.meta.glob('/src/data/*.{png,jpg,jpeg,svg}', { eager: true });
 
 function getImageUrl(path: string) {
@@ -32,9 +28,47 @@ function getImageUrl(path: string) {
     return (imagensCandidatos[caminhoCompleto] as any)?.default || '';
 }
 
+// Extrai a lista de candidatos do arquivo JSON com segurança
+function obterListaCandidatos(): Candidato[] {
+    if (candidatosData && Array.isArray((candidatosData as any).candidatos)) {
+        return (candidatosData as any).candidatos;
+    } else if (Array.isArray(candidatosData)) {
+        return candidatosData;
+    } else if (candidatosData && Array.isArray((candidatosData as any).default?.candidatos)) {
+        return (candidatosData as any).default.candidatos;
+    }
+    return [];
+}
+
+// Verifica e busca o candidato em tempo real a cada dígito inserido
+function verificarCandidato(numero: string) {
+    if (!numero) {
+        candidatoSelecionado.value = null;
+        return;
+    }
+    
+    const lista = obterListaCandidatos();
+    const encontrado = lista.find((c: Candidato) => Number(c.numero) === Number(numero));
+    
+    if (encontrado) {
+        candidatoSelecionado.value = encontrado;
+    } else {
+        candidatoSelecionado.value = null;
+    }
+}
+
+function handleDigit(n: number) {
+    if (votoEmBranco.value) return; // Se clicou em branco, bloqueia novos dígitos
+    if (numeroDigitado.value.length < 5) {
+        numeroDigitado.value += n.toString();
+        verificarCandidato(numeroDigitado.value);
+    }
+}
+
 const confirm = () => {
     if (votoEmBranco.value) {
         alert("Voto em Branco Confirmado!");
+        correct();
         return 0;
     }
 
@@ -43,25 +77,13 @@ const confirm = () => {
         return 0;
     }
 
-    let listaCandidatos: Candidato[] = [];
-    
-    if (candidatosData && Array.isArray((candidatosData as any).candidatos)) {
-        listaCandidatos = (candidatosData as any).candidatos;
-    } else if (Array.isArray(candidatosData)) {
-        listaCandidatos = candidatosData;
-    } else if (candidatosData && Array.isArray((candidatosData as any).default?.candidatos)) {
-        listaCandidatos = (candidatosData as any).default.candidatos;
-    }
-
-    const encontrado = listaCandidatos.find((c: Candidato) => Number(c.numero) === Number(numeroDigitado.value));
-
-    if (encontrado) {
-        candidatoSelecionado.value = encontrado;
+    if (candidatoSelecionado.value) {
+        alert(`Voto confirmado para ${candidatoSelecionado.value.name}!`);
     } else {
-        alert("Número inválido / Voto Nulo!");
-        candidatoSelecionado.value = null;
+        alert("Voto Nulo Confirmado!");
     }
 
+    correct();
     return Number(numeroDigitado.value);
 }
 
@@ -90,27 +112,60 @@ const white = () => {
         </div>
 
         <div class="urna-corpo">
+            <!-- Painel da Tela (Estilo LCD Realista integrado ao seu design antigo) -->
             <div class="painel">
-                <div class="info-voto">
-                    <div class="dados-candidato">
-                        <div class="display-numero">
-                            <span v-if="votoEmBranco" class="blink">VOTO EM BRANCO</span>
-                            <span v-else>{{ numeroDigitado }}</span>
+                <div class="tela-lcd">
+                    <div class="conteudo-tela">
+                        <div class="dados-voto">
+                            <span class="txt-simulacao">TREINAMENTO</span>
+                            <span class="titulo-voto">SEU VOTO PARA</span>
+                            
+                            <h2 class="cargo-atual">
+                                {{ candidatoSelecionado ? candidatoSelecionado.cargo : 'PRESIDENTE' }}
+                            </h2>
+
+                            <div class="campo-numero">
+                                <span class="label">Número:</span>
+                                <div class="digitos-container">
+                                    <span v-if="votoEmBranco" class="txt-branco-pisca blink">VOTO EM BRANCO</span>
+                                    <span v-else class="digitos-digitados">{{ numeroDigitado }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Informações dinâmicas que surgem ao digitar -->
+                            <div v-if="candidatoSelecionado" class="detalhes-candidato">
+                                <p><span class="label">Nome:</span> {{ candidatoSelecionado.name }}</p>
+                                <p><span class="label">Partido:</span> {{ candidatoSelecionado.partido }}</p>
+                                <p v-if="candidatoSelecionado.slogan" class="slogan-txt">
+                                    <i>"{{ candidatoSelecionado.slogan }}"</i>
+                                </p>
+                            </div>
+                            
+                            <!-- Exibição de número não encontrado / Voto Nulo enquanto digita -->
+                            <div v-else-if="numeroDigitado.value && numeroDigitado.length >= 2" class="detalhes-candidato">
+                                <p class="voto-nulo-aviso blink">NÚMERO ERRADO — VOTO NULO</p>
+                            </div>
                         </div>
 
-                        <div v-if="candidatoSelecionado" class="detalhes">
-                            <p class="cargo">{{ candidatoSelecionado.cargo }}</p>
-                            <p class="nome">Nome: {{ candidatoSelecionado.name }}</p>
-                            <p class="partido">Partido: {{ candidatoSelecionado.partido }}</p>
+                        <!-- Foto renderizada em tempo real -->
+                        <div class="container-foto-candidato">
+                            <div v-if="candidatoSelecionado" class="foto-box">
+                                <img :src="getImageUrl(candidatoSelecionado.fotoUrl)" :alt="candidatoSelecionado.name" />
+                            </div>
                         </div>
                     </div>
 
-                    <div v-if="candidatoSelecionado" class="foto-candidato">
-                        <img :src="getImageUrl(candidatoSelecionado.fotoUrl)" :alt="candidatoSelecionado.name" />
-                    </div>
+                    <!-- Instruções fixas da urna oficial na parte inferior da tela -->
+                    <footer class="instrucoes-rodape">
+                        <div class="linha-divisoria"></div>
+                        <p>Aperte a tecla:</p>
+                        <p class="instrucao-linha">🟩 <span class="bold">VERDE</span> para <span class="bold">CONFIRMAR</span></p>
+                        <p class="instrucao-linha">🟧 <span class="bold">LARANJA</span> para <span class="bold">CORRIGIR</span></p>
+                    </footer>
                 </div>
             </div>
 
+            <!-- Mantido o seu Teclado Antigo Intacto -->
             <div class="teclado-container">
                 <div class="teclado-fundo-preto">
                     <div class="numeros-grid">
@@ -190,75 +245,163 @@ const white = () => {
     align-items: stretch;
 }
 
+/* CONTAINER DA TELA */
 .painel {
     flex: 1.3;
     background-color: #1a1a1a;
-    padding: 16px;
+    padding: 14px;
     border-radius: 4px;
     border-bottom: 3px solid #fff;
     border-right: 3px solid #fff;
     border-top: 3px solid #888;
     border-left: 3px solid #888;
     box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
-    min-height: 340px;
+    min-height: 360px;
     display: flex;
 }
 
-.info-voto {
-    background-color: #fff;
+/* TELA ESTILO LCD OFICIAL */
+.tela-lcd {
+    background-color: #e2ebd5; /* Tom esverdeado clássico da Urna */
     width: 100%;
     height: 100%;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.2);
-    font-family: sans-serif;
-}
-
-.dados-candidato {
+    padding: 16px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    flex: 1;
-    color: #000;
+    justify-content: space-between;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.3);
+    font-family: sans-serif;
+    color: #222;
 }
 
-.display-numero {
-    font-size: 2.6rem;
+.conteudo-tela {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+}
+
+.dados-voto {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.txt-simulacao {
+    font-size: 0.75rem;
     font-weight: bold;
-    height: 55px;
+    color: #555;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.titulo-voto {
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+.cargo-atual {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.campo-numero {
     display: flex;
     align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    min-height: 44px;
 }
 
-.blink {
-    animation: blink-animation 1s steps(2, start) infinite;
-}
-@keyframes blink-animation { to { visibility: hidden; } }
-
-.detalhes {
-    font-size: 1rem;
-    line-height: 1.5;
-}
-.detalhes .cargo {
-    text-transform: uppercase;
+.digitos-digitados {
+    font-size: 2.2rem;
     font-weight: bold;
-    font-size: 1.3rem;
-    margin-bottom: 8px;
+    font-family: monospace;
+    letter-spacing: 4px;
 }
 
-.foto-candidato {
-    width: 120px; 
-    aspect-ratio: 3 / 4; 
-    border: 2px solid #000;
-    align-self: flex-start; 
+.txt-branco-pisca {
+    font-size: 1.3rem;
+    font-weight: bold;
 }
-.foto-candidato img {
+
+.detalhes-candidato {
+    margin-top: 15px;
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detalhes-candidato .label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #444;
+    font-weight: bold;
+}
+
+.slogan-txt {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.voto-nulo-aviso {
+    color: #a00;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+/* CONTAINER DA FOTO NA TELA */
+.container-foto-candidato {
+    width: 115px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.foto-box {
+    width: 105px;
+    height: 140px;
+    border: 2px solid #111;
+    background-color: rgba(0,0,0,0.03);
+}
+
+.foto-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    filter: grayscale(100%) contrast(110%); /* Efeito P&B pixelado */
 }
 
+/* RODAPÉ DA TELA */
+.instrucoes-rodape {
+    font-size: 0.72rem;
+    color: #333;
+    line-height: 1.4;
+    margin-top: 10px;
+}
+
+.linha-divisoria {
+    height: 1.5px;
+    background-color: #555;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.instrucao-linha {
+    margin-left: 2px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+/* MANUTENÇÃO DOS SEUS ESTILOS ORIGINAIS DO TECLADO */
 .teclado-container {
     flex: 1;
     display: flex;
@@ -322,133 +465,37 @@ const white = () => {
     height: 46px !important;
 }
 
+.blink {
+    animation: blink-animation 1s steps(2, start) infinite;
+}
+@keyframes blink-animation { to { visibility: hidden; } }
+
+/* Responsividade original mantida */
 @media (orientation: landscape) and (max-width: 1024px) {
-    .urna-dispositivo {
-        max-width: 95%;
-        padding: 15px; 
-    }
-
-    .blink {
-        margin-top: 20px;
-    }
-
-    .urna-corpo {
-        gap: 15px; 
-    }
-
-    .painel {
-        min-height: 280px;
-        flex: 1.1; 
-    }
-
-    .teclado-fundo-preto {
-        padding: 15px; 
-        max-width: 310px;
-    }
-
-    .numeros-grid {
-        gap: 8px 12px; 
-    }
+    .urna-dispositivo { max-width: 95%; padding: 15px; }
+    .urna-corpo { gap: 15px; }
+    .painel { min-height: 280px; flex: 1.1; }
+    .teclado-fundo-preto { padding: 15px; max-width: 310px; }
+    .numeros-grid { gap: 8px 12px; }
 }
-
 @media (orientation: landscape) and (max-width: 768px) {
-    .urna-dispositivo {
-        transform: scale(0.85); 
-        transform-origin: top center;
-        margin-bottom: -50px;
-    }
-    .blink {
-        margin-top: 20px;
-    }
+    .urna-dispositivo { transform: scale(0.85); margin-bottom: -50px; }
 }
-
 @media (orientation: landscape) and (max-width: 640px) {
-    .urna-dispositivo {
-        transform: scale(0.72);
-        margin-bottom: -100px;
-    }
-    .blink {
-        margin-top: 20px;
-    }
+    .urna-dispositivo { transform: scale(0.72); margin-bottom: -100px; }
 }
-
 @media (orientation: portrait) {
-    .urna-dispositivo {
-        padding: 20px;
-        max-width: 480px;
-        margin: 0 auto;
-    }
-    .blink {
-        margin-top: 20px;
-    }
-    .dados-candidato {
-        height: 200px;
-    }
-    .urna-header {
-        display: none;
-    }
-
-    .urna-corpo {
-        flex-direction: column;
-        gap: 25px;
-    }
-    .painel {
-        min-height: 260px;
-        flex: none;
-    }
-    
-    .teclado-container {
-        max-width: 100%;
-        display: flex;
-        justify-content: flex-end; 
-        box-sizing: border-box;
-        padding-right: 10px;
-    }
-
-    .teclado-fundo-preto {
-        max-width: 340px; 
-        width: 100%;
-        background-color: transparent; 
-        box-shadow: none;
-        padding: 0;
-        display: grid;
-        grid-template-columns: 2.2fr 1fr; 
-        gap: 15px;
-    }
-
-    .numeros-grid {
-        gap: 12px;
-        width: 100%;
-        max-width: 220px; 
-        justify-self: end; 
-    }
-
-    .acoes-urna {
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start; 
-        gap: 12px;
-        height: 100%;
-        width: 100%;
-    }
-    
-    .confirmButton {
-        flex: 3 !important;
-        min-height: 75px !important;
-        display: flex;
-        align-items: start;
-        padding-top: 10px !important;
-        max-width: 80px;
-    }
-
-    .whiteButton {
-        flex: 1 !important;
-        min-height: 45px !important;
-    }
-
-    .correctButton {
-        flex: 1 !important;
-        min-height: 45px !important;
-    }
+    /* Estilos portrait originais preservados */
+    .urna-dispositivo { padding: 20px; max-width: 480px; margin: 0 auto; }
+    .urna-header { display: none; }
+    .urna-corpo { flex-direction: column; gap: 25px; }
+    .painel { min-height: 260px; flex: none; }
+    .teclado-container { max-width: 100%; display: flex; justify-content: flex-end; padding-right: 10px; }
+    .teclado-fundo-preto { max-width: 340px; width: 100%; background-color: transparent; box-shadow: none; padding: 0; display: grid; grid-template-columns: 2.2fr 1fr; gap: 15px; }
+    .numeros-grid { gap: 12px; width: 100%; max-width: 220px; justify-self: end; }
+    .acoes-urna { flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; height: 100%; width: 100%; }
+    .confirmButton { flex: 3 !important; min-height: 75px !important; display: flex; align-items: start; padding-top: 10px !important; max-width: 80px; }
+    .whiteButton { flex: 1 !important; min-height: 45px !important; }
+    .correctButton { flex: 1 !important; min-height: 45px !important; }
 }
 </style>
