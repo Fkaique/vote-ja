@@ -77,7 +77,7 @@ function finishTutorial() {
             <!-- Indicadores de Bolinha (Dots) Centrais -->
             <div class="navigation-dots">
                 <button 
-                    v-for="(page, index) in tutorialPages" 
+                    v-for="(_, index) in tutorialPages"
                     :key="index"
                     class="dot-indicator"
                     :class="{ 'dot-active': index === currentPage }"

@@ -4,11 +4,7 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "extends": "@vue/tsconfig/tsconfig.dom.json", // ou similar se houver
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
-    // ... suas outras configurações
-
     "resolveJsonModule": true,
     "esModuleInterop": true
   }
