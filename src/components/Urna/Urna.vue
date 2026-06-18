@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ButtonNumber from './ButtonNumber.vue';
 import ConfirmButton from './ConfirmButton.vue';
 
@@ -13,7 +13,14 @@ interface Candidato {
     fotoUrl: string;
     cargo: string;
     slogan?: string;
+    modalidade?: string;
 }
+
+const props = withDefaults(defineProps<{
+    modalidade?: 'nacional' | 'municipal' | null;
+}>(), {
+    modalidade: null,
+});
 
 const numeroDigitado = ref('');
 const candidatoSelecionado = ref<Candidato | null>(null);
@@ -30,15 +37,26 @@ function getImageUrl(path: string) {
 
 // Extrai a lista de candidatos do arquivo JSON com segurança
 function obterListaCandidatos(): Candidato[] {
+    let lista: Candidato[] = [];
     if (candidatosData && Array.isArray((candidatosData as any).candidatos)) {
-        return (candidatosData as any).candidatos;
+        lista = (candidatosData as any).candidatos;
     } else if (Array.isArray(candidatosData)) {
-        return candidatosData;
+        lista = candidatosData;
     } else if (candidatosData && Array.isArray((candidatosData as any).default?.candidatos)) {
-        return (candidatosData as any).default.candidatos;
+        lista = (candidatosData as any).default.candidatos;
     }
-    return [];
+    if (props.modalidade) {
+        return lista.filter((c) => c.modalidade === props.modalidade);
+    }
+    return lista;
 }
+
+// Cargo da urna baseado na modalidade selecionada
+const cargoAtual = computed(() => {
+    if (candidatoSelecionado.value) return candidatoSelecionado.value.cargo;
+    if (props.modalidade === 'municipal') return 'PREFEITO';
+    return 'PRESIDENTE';
+});
 
 // Verifica e busca o candidato em tempo real a cada dígito inserido
 function verificarCandidato(numero: string) {
@@ -121,7 +139,7 @@ const white = () => {
                             <span class="titulo-voto">SEU VOTO PARA</span>
                             
                             <h2 class="cargo-atual">
-                                {{ candidatoSelecionado ? candidatoSelecionado.cargo : 'PRESIDENTE' }}
+                                {{ cargoAtual }}
                             </h2>
 
                             <div class="campo-numero">

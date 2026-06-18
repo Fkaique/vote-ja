@@ -7,7 +7,8 @@
             "partido": "PCFCA",
             "slogan": "Trabalho sério, mas sem perder o café.",
             "fotoUrl": "./henrique_vasconcelos.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 2,
@@ -16,7 +17,8 @@
             "partido": "FNCD",
             "slogan": "União, família e farofa.",
             "fotoUrl": "./eduardo_farias.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 3,
@@ -25,7 +27,8 @@
             "partido": "UBA2M",
             "slogan": "Objetividade para mudar o país.",
             "fotoUrl": "./camila_andrade.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 4,
@@ -34,7 +37,8 @@
             "partido": "PMR",
             "slogan": "Partido do Meme Responsável (PMR)",
             "fotoUrl": "./thiago_martins.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 5,
@@ -43,7 +47,8 @@
             "partido": "MSFF",
             "slogan": "Agora vai.",
             "fotoUrl": "./leonardo_barros.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 6,
@@ -52,7 +57,8 @@
             "partido": "PNWL",
             "slogan": "Não encontrado.",
             "fotoUrl": "./roberto_nogueira.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 7,
@@ -61,7 +67,8 @@
             "partido": "ADBP",
             "slogan": "Aliança Democrática do Boleto Pago.",
             "fotoUrl": "./fernanda_queiroz.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 8,
@@ -70,7 +77,8 @@
             "partido": "UNSAF",
             "slogan": "União Nacional da Sombra e Água Fresca (UNSAF)",
             "fotoUrl": "./aline_ribeiro.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 9,
@@ -79,7 +87,8 @@
             "partido": "PUCS",
             "slogan": "Mais recheio para o povo.",
             "fotoUrl": "./gabriel_moraes.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 10,
@@ -88,7 +97,8 @@
             "partido": "MMRO",
             "slogan": "Planejar também é diversão.",
             "fotoUrl": "./larissa_campos.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 11,
@@ -97,7 +107,8 @@
             "partido": "FBPQ",
             "slogan": "Todo bairro merece padaria boa.",
             "fotoUrl": "./vinicius_almeida.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 12,
@@ -106,7 +117,8 @@
             "partido": "FPPST",
             "slogan": "Frente Popular do Pix Sem Taxa (FPPST)",
             "fotoUrl": "./marcelo_duarte.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 13,
@@ -115,7 +127,8 @@
             "partido": "LEJ",
             "slogan": "Liga do Estacionamento Justo.",
             "fotoUrl": "./rafael_costa.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 14,
@@ -124,7 +137,8 @@
             "partido": "PFA",
             "slogan": "Partido da Fila que Anda.",
             "fotoUrl": "./bianca_fernandes.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 15,
@@ -133,7 +147,8 @@
             "partido": "UBCAL",
             "slogan": "União Brasileira Contra o Áudio Longo.",
             "fotoUrl": "./joao_guilherme.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
         },
         {
             "id": 16,
@@ -142,7 +157,58 @@
             "partido": "MNAG",
             "slogan": "Movimento Nacional do Ar-Condicionado Geladinho (MNAG)",
             "fotoUrl": "./natalia_moreira.png",
-            "cargo": "Presidente"
+            "cargo": "Presidente",
+            "modalidade": "nacional"
+        },
+        {
+            "id": 17,
+            "name": "Ana Silva",
+            "numero": 10,
+            "partido": "PDT",
+            "slogan": "Saúde e educação para todos.",
+            "fotoUrl": "./ana_silva.png",
+            "cargo": "Prefeito",
+            "modalidade": "municipal"
+        },
+        {
+            "id": 18,
+            "name": "Carlos Eduardo",
+            "numero": 20,
+            "partido": "PSB",
+            "slogan": "A cidade que queremos construir juntos.",
+            "fotoUrl": "./carlos_eduardo.png",
+            "cargo": "Prefeito",
+            "modalidade": "municipal"
+        },
+        {
+            "id": 19,
+            "name": "Marina Souza",
+            "numero": 30,
+            "partido": "PV",
+            "slogan": "Uma cidade mais verde e sustentável.",
+            "fotoUrl": "./marina_souza.png",
+            "cargo": "Prefeito",
+            "modalidade": "municipal"
+        },
+        {
+            "id": 20,
+            "name": "Ricardo Santos",
+            "numero": 40,
+            "partido": "MDB",
+            "slogan": "Gestão séria para dias melhores.",
+            "fotoUrl": "./ricardo_santos.png",
+            "cargo": "Vereador",
+            "modalidade": "municipal"
+        },
+        {
+            "id": 21,
+            "name": "Beatriz Lima",
+            "numero": 50,
+            "partido": "PT",
+            "slogan": "A voz do povo no parlamento.",
+            "fotoUrl": "./beatriz_lima.png",
+            "cargo": "Vereador",
+            "modalidade": "municipal"
         }
     ]
 }

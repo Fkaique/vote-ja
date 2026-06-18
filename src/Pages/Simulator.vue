@@ -13,9 +13,11 @@ interface Candidato {
     numero: number;
     partido: string;
     cargo: string;
+    modalidade: string;
 }
 
 const showTutorial = ref(false);
+const modalidadeSelecionada = ref<'nacional' | 'municipal' | null>(null);
 
 onMounted(() => {
     showTutorial.value = true;
@@ -25,13 +27,26 @@ function openTutorial() {
     showTutorial.value = true;
 }
 
-function closeTutorial() {
+function closeTutorial(modalidade: 'nacional' | 'municipal') {
+    modalidadeSelecionada.value = modalidade;
     showTutorial.value = false;
 }
 
-const candidatos: Candidato[] = Array.isArray(candidatosData) 
-  ? candidatosData 
+const todosCandidatos: Candidato[] = Array.isArray(candidatosData)
+  ? candidatosData
   : (candidatosData as any).candidatos || [];
+
+// Candidatos filtrados para a colinha — mostra de acordo com a modalidade ativa
+const candidatosDaColinha = () => {
+    if (!modalidadeSelecionada.value) return todosCandidatos;
+    return todosCandidatos.filter((c) => c.modalidade === modalidadeSelecionada.value);
+};
+
+const labelModalidade = () => {
+    if (modalidadeSelecionada.value === 'nacional') return '🇧🇷 Eleição Nacional';
+    if (modalidadeSelecionada.value === 'municipal') return '🏙️ Eleição Municipal';
+    return '';
+};
 </script>
 
 <template>
@@ -39,9 +54,9 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
   
   <main class="simulation-screen">
     <!-- Menu Suspenso (Overlay Modal) do Tutorial -->
-    <div v-if="showTutorial" class="tutorial-overlay" @click.self="closeTutorial">
+    <div v-if="showTutorial" class="tutorial-overlay" @click.self="() => {}">
       <div class="tutorial-modal-box">
-        <VoterTutorial @close="closeTutorial" />
+        <VoterTutorial @close="(m) => closeTutorial(m)" />
       </div>
     </div>
 
@@ -49,6 +64,9 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     <header class="simulation-header">
       <h1 class="sim-title">Ambiente de Votação</h1>
       <p class="sim-subtitle">Pratique seu voto na cabine virtual. Suas ações aqui são estritamente educacionais.</p>
+      <div v-if="modalidadeSelecionada" class="modalidade-badge">
+        {{ labelModalidade() }}
+      </div>
     </header>
 
     <div class="simulation-layout">
@@ -62,7 +80,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
             <span class="dot"></span>
           </div>
           <div class="urna-wrapper">
-            <Urna />
+            <Urna :modalidade="modalidadeSelecionada" />
           </div>
         </div>
       </section>
@@ -83,7 +101,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
           
           <div class="candidates-list">
             <div 
-              v-for="candidato in candidatos" 
+              v-for="candidato in candidatosDaColinha()" 
               :key="candidato.id" 
               class="candidate-sticky"
             >
@@ -95,7 +113,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
               <div class="cand-number-badge">{{ candidato.numero }}</div>
             </div>
 
-            <div v-if="candidatos.length === 0" class="no-data">
+            <div v-if="candidatosDaColinha().length === 0" class="no-data">
               <p>Nenhum candidato configurado no arquivo JSON.</p>
             </div>
           </div>
@@ -115,7 +133,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px; /* Reduzido para não espremer telas pequenas */
+    padding: 24px 16px;
     width: 100%;
     max-width: 1300px;
     margin: 0 auto;
@@ -135,7 +153,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    padding: 12px; /* Espaço mínimo para celulares pequenos */
+    padding: 12px;
     box-sizing: border-box;
 }
 
@@ -143,11 +161,10 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 .tutorial-modal-box {
     width: 100%;
     max-width: 900px;
-    /* Ajustado para max-height fluido, evitando que transborde do viewport */
     max-height: calc(100vh - 24px); 
     background-color: var(--color-background);
     border-radius: 12px;
-    overflow-y: auto; /* Permite scroll se o tutorial interno for longo */
+    overflow-y: auto;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     animation: modal-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -171,17 +188,31 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
 }
 
 .sim-title {
-    font-size: clamp(1.6rem, 5vw, 2.2rem); /* Tamanho de fonte fluido */
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
     font-family: var(--font-heading);
     color: var(--color-text);
     margin: 0 0 8px 0;
 }
 
 .sim-subtitle {
-    font-size: clamp(0.9rem, 3vw, 1.1rem); /* Subtítulo fluido */
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
     color: var(--color-text);
     opacity: 0.8;
     margin: 0;
+}
+
+/* Badge de modalidade selecionada */
+.modalidade-badge {
+    display: inline-block;
+    margin-top: 10px;
+    background-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+    font-family: var(--font-heading);
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 5px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
 }
 
 /* Layout Estrutural */
@@ -198,7 +229,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     width: 100%;
     display: flex;
     justify-content: center;
-    overflow: hidden; /* Evita vazamento de componentes filhos absolutos */
+    overflow: hidden;
 }
 
 .booth-shield {
@@ -206,7 +237,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     border: 2px solid var(--color-titanium-2);
     border-radius: 16px;
     width: 100%;
-    padding: 30px 20px 20px 20px; /* Aliviado os paddings */
+    padding: 30px 20px 20px 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
     position: relative;
     box-sizing: border-box;
@@ -328,7 +359,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-width: 0; /* Evita que o texto quebre o flex box */
+    min-width: 0;
 }
 
 .cand-name {
@@ -336,7 +367,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     font-size: 0.9rem;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Bota "..." se o nome for gigante */
+    text-overflow: ellipsis;
 }
 
 .cand-party {
@@ -362,12 +393,9 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     padding: 16px 0;
 }
 
-/* ==========================================================================
-   MEDIA QUERIES - Ajustes Finos para Telas Pequenas e Mobile
-   ========================================================================== */
 @media (max-width: 1024px) {
     .simulation-layout {
-        grid-template-columns: 1fr; /* Força colunas empilhadas */
+        grid-template-columns: 1fr;
         gap: 24px;
     }
 }
@@ -379,7 +407,7 @@ const candidatos: Candidato[] = Array.isArray(candidatosData)
     }
     
     .booth-shield {
-        padding: 24px 10px 12px 10px; /* Reduz tamanho da cabine no celular */
+        padding: 24px 10px 12px 10px;
         border-radius: 10px;
     }
 
