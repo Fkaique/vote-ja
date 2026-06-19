@@ -49,6 +49,7 @@ const emit = defineEmits<{
 
 .modalidade-header {
     text-align: center;
+    color: var(--color-text)
 }
 
 .modalidade-header h3 {
@@ -62,6 +63,7 @@ const emit = defineEmits<{
     margin: 0;
     font-size: 1rem;
     opacity: 0.75;
+    color: var(--color-text)
 }
 
 .modalidade-cards {
