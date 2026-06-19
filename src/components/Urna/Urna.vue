@@ -184,27 +184,23 @@ const confirm = () => {
     if (votoEmBranco.value) {
         tocarConfirma();
         votosRegistrados.value[chave] = { numero: null, candidato: null, branco: true, nulo: false };
-        alert(`✅ Voto em BRANCO confirmado para ${etapa.label}.`);
         avancarEtapa();
         return 0;
     }
 
     // Nenhum número digitado
     if (!numeroDigitado.value) {
-        alert('⚠️ Digite um número ou pressione BRANCO.');
         return 0;
     }
 
     // Número incompleto
     if (numeroDigitado.value.length < digitosEsperados.value) {
-        alert(`⚠️ O número para ${etapa.label} deve ter ${digitosEsperados.value} dígitos.`);
         return 0;
     }
 
     // Senador duplicado → anula automaticamente o 2º voto
     if (senadorDuplicado()) {
         tocarConfirma();
-        alert(`⚠️ Você já votou neste candidato na 1ª vaga.\nO 2º voto no Senador será ANULADO.`);
         votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: null, branco: false, nulo: true };
         avancarEtapa();
         return 0;
@@ -215,7 +211,6 @@ const confirm = () => {
         tocarConfirma();
         const c = candidatoSelecionado.value;
         votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: c, branco: false, nulo: false };
-        alert(`✅ Voto confirmado para ${c.name} — ${c.partido}`);
         avancarEtapa();
         return Number(numeroDigitado.value);
     }
@@ -223,7 +218,6 @@ const confirm = () => {
     // Voto nulo (número não encontrado)
     tocarConfirma();
     votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: null, branco: false, nulo: true };
-    alert(`🚫 Voto NULO confirmado para ${etapa.label}.`);
     avancarEtapa();
     return 0;
 };
