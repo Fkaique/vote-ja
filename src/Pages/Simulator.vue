@@ -368,12 +368,14 @@ const labelModalidade = () => {
     color: var(--color-text-contrast);
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--color-text-contrast);
 }
 
 .cand-party {
     font-size: 0.75rem;
     color: var(--color-text-contrast);
     opacity: 0.75;
+    color: var(--color-text-contrast);
 }
 
 .cand-number-badge {
