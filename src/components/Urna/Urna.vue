@@ -4,7 +4,19 @@ import ButtonNumber from './ButtonNumber.vue';
 import ConfirmButton from './ConfirmButton.vue';
 
 import candidatosData from '../../data/candidatos.json';
+import somConfirma from '../../assets/confirma-urna.mp3';
 
+// ─────────────────────────────────────────────
+// Áudio
+// ─────────────────────────────────────────────
+function tocarConfirma() {
+    const audio = new Audio(somConfirma);
+    audio.play().catch(() => { /* navegador pode bloquear sem interação prévia */ });
+}
+
+// ─────────────────────────────────────────────
+// Tipos
+// ─────────────────────────────────────────────
 interface Candidato {
     id: number;
     name: string;
@@ -16,26 +28,75 @@ interface Candidato {
     modalidade?: string;
 }
 
+interface DefCargo {
+    label: string;         // Nome exibido na tela
+    digitos: number;       // Quantidade de dígitos esperada
+    cargo: string;         // Valor de "cargo" no JSON para filtrar candidatos
+    vagaKey?: string;      // Chave única para distinguir vagas (ex: senador1, senador2)
+}
+
+// ─────────────────────────────────────────────
+// Props
+// ─────────────────────────────────────────────
 const props = withDefaults(defineProps<{
     modalidade?: 'nacional' | 'municipal' | null;
 }>(), {
     modalidade: null,
 });
 
-const numeroDigitado = ref('');
-const candidatoSelecionado = ref<Candidato | null>(null);
-const votoEmBranco = ref(false);
+// ─────────────────────────────────────────────
+// Sequências de cargos por modalidade
+// ─────────────────────────────────────────────
+const SEQUENCIA_NACIONAL: DefCargo[] = [
+    { label: 'DEPUTADO FEDERAL',  digitos: 4, cargo: 'Deputado Federal'  },
+    { label: 'DEPUTADO ESTADUAL', digitos: 5, cargo: 'Deputado Estadual' },
+    { label: 'SENADOR (1ª VAGA)',           digitos: 3, cargo: 'Senador', vagaKey: 'senador1' },
+    { label: 'SENADOR (2ª VAGA)',           digitos: 3, cargo: 'Senador', vagaKey: 'senador2' },
+    { label: 'GOVERNADOR',                  digitos: 2, cargo: 'Governador'        },
+    { label: 'PRESIDENTE',                  digitos: 2, cargo: 'Presidente'        },
+];
 
-// Importação dinâmica das fotos dos candidatos
+const SEQUENCIA_MUNICIPAL: DefCargo[] = [
+    { label: 'VEREADOR', digitos: 5, cargo: 'Vereador' },
+    { label: 'PREFEITO', digitos: 2, cargo: 'Prefeito' },
+];
+
+// ─────────────────────────────────────────────
+// Estado reativo
+// ─────────────────────────────────────────────
+const etapaIndex        = ref(0);
+const numeroDigitado    = ref('');
+const candidatoSelecionado = ref<Candidato | null>(null);
+const votoEmBranco      = ref(false);
+const votosRegistrados  = ref<Record<string, { numero: number | null; candidato: Candidato | null; branco: boolean; nulo: boolean }>>({});
+const votacaoEncerrada  = ref(false);
+
+// ─────────────────────────────────────────────
+// Sequência ativa conforme modalidade
+// ─────────────────────────────────────────────
+const sequencia = computed<DefCargo[]>(() => {
+    if (props.modalidade === 'municipal') return SEQUENCIA_MUNICIPAL;
+    return SEQUENCIA_NACIONAL;
+});
+
+const etapaAtual = computed<DefCargo>(() => sequencia.value[etapaIndex.value]);
+
+const digitosEsperados = computed(() => etapaAtual.value?.digitos ?? 2);
+
+// ─────────────────────────────────────────────
+// Imagens
+// ─────────────────────────────────────────────
 const imagensCandidatos = import.meta.glob('/src/data/*.{png,jpg,jpeg,svg}', { eager: true });
 
 function getImageUrl(path: string) {
-    const cleanPath = path.replace("./", "");
+    const cleanPath = path.replace('./', '');
     const caminhoCompleto = `/src/data/${cleanPath}`;
     return (imagensCandidatos[caminhoCompleto] as any)?.default || '';
 }
 
-// Extrai a lista de candidatos do arquivo JSON com segurança
+// ─────────────────────────────────────────────
+// Candidatos
+// ─────────────────────────────────────────────
 function obterListaCandidatos(): Candidato[] {
     let lista: Candidato[] = [];
     if (candidatosData && Array.isArray((candidatosData as any).candidatos)) {
@@ -45,84 +106,151 @@ function obterListaCandidatos(): Candidato[] {
     } else if (candidatosData && Array.isArray((candidatosData as any).default?.candidatos)) {
         lista = (candidatosData as any).default.candidatos;
     }
-    if (props.modalidade) {
-        return lista.filter((c) => c.modalidade === props.modalidade);
-    }
     return lista;
 }
 
-// Cargo da urna baseado na modalidade selecionada
-const cargoAtual = computed(() => {
-    if (candidatoSelecionado.value) return candidatoSelecionado.value.cargo;
-    if (props.modalidade === 'municipal') return 'PREFEITO';
-    return 'PRESIDENTE';
-});
-
-// Verifica e busca o candidato em tempo real a cada dígito inserido
-function verificarCandidato(numero: string) {
-    if (!numero) {
-        candidatoSelecionado.value = null;
-        return;
-    }
-    
+function candidatosDaEtapa(): Candidato[] {
     const lista = obterListaCandidatos();
-    const encontrado = lista.find((c: Candidato) => Number(c.numero) === Number(numero));
-    
-    if (encontrado) {
-        candidatoSelecionado.value = encontrado;
-    } else {
-        candidatoSelecionado.value = null;
-    }
+    const cargo = etapaAtual.value?.cargo;
+    return lista.filter((c) => c.cargo === cargo);
 }
 
+function verificarCandidato(numero: string) {
+    if (!numero) { candidatoSelecionado.value = null; return; }
+    const encontrado = candidatosDaEtapa().find((c) => Number(c.numero) === Number(numero));
+    candidatoSelecionado.value = encontrado ?? null;
+}
+
+// ─────────────────────────────────────────────
+// Lógica especial: Senador 2ª vaga
+// ─────────────────────────────────────────────
+function senadorDuplicado(): boolean {
+    const etapa = etapaAtual.value;
+    if (etapa?.vagaKey !== 'senador2') return false;
+    const voto1 = votosRegistrados.value['senador1'];
+    if (!voto1 || !voto1.candidato || !candidatoSelecionado.value) return false;
+    return voto1.candidato.id === candidatoSelecionado.value.id;
+}
+
+// ─────────────────────────────────────────────
+// Handlers
+// ─────────────────────────────────────────────
 function handleDigit(n: number) {
-    if (votoEmBranco.value) return; // Se clicou em branco, bloqueia novos dígitos
-    if (numeroDigitado.value.length < 5) {
+    if (votoEmBranco.value || votacaoEncerrada.value) return;
+    if (numeroDigitado.value.length < digitosEsperados.value) {
         numeroDigitado.value += n.toString();
         verificarCandidato(numeroDigitado.value);
     }
 }
 
-const confirm = () => {
-    if (votoEmBranco.value) {
-        alert("Voto em Branco Confirmado!");
-        correct();
-        return 0;
-    }
-
-    if (!numeroDigitado.value) {
-        alert("Digite um número ou vote em Branco!");
-        return 0;
-    }
-
-    if (candidatoSelecionado.value) {
-        alert(`Voto confirmado para ${candidatoSelecionado.value.name}!`);
-    } else {
-        alert("Voto Nulo Confirmado!");
-    }
-
-    correct();
-    return Number(numeroDigitado.value);
-}
-
-const correct = () => {
+function resetarCampo() {
     numeroDigitado.value = '';
     candidatoSelecionado.value = null;
     votoEmBranco.value = false;
-    return 0;
 }
+
+function avancarEtapa() {
+    if (etapaIndex.value < sequencia.value.length - 1) {
+        etapaIndex.value++;
+        resetarCampo();
+    } else {
+        // Última etapa concluída
+        votacaoEncerrada.value = true;
+        resetarCampo();
+    }
+}
+
+const confirm = () => {
+    if (votacaoEncerrada.value) return 0;
+
+    const etapa = etapaAtual.value;
+    const chave = etapa.vagaKey ?? etapa.cargo;
+
+    // Voto em branco
+    if (votoEmBranco.value) {
+        tocarConfirma();
+        votosRegistrados.value[chave] = { numero: null, candidato: null, branco: true, nulo: false };
+        
+        avancarEtapa();
+        return 0;
+    }
+
+    // Nenhum número digitado
+    if (!numeroDigitado.value) {
+        return 0;
+    }
+
+    // Número incompleto
+    if (numeroDigitado.value.length < digitosEsperados.value) {
+        return 0;
+    }
+
+    // Senador duplicado → anula automaticamente o 2º voto
+    if (senadorDuplicado()) {
+        tocarConfirma();
+        votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: null, branco: false, nulo: true };
+        avancarEtapa();
+        return 0;
+    }
+
+    // Voto válido com candidato encontrado
+    if (candidatoSelecionado.value) {
+        tocarConfirma();
+        const c = candidatoSelecionado.value;
+        votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: c, branco: false, nulo: false };
+
+        avancarEtapa();
+        return Number(numeroDigitado.value);
+    }
+
+    // Voto nulo (número não encontrado)
+    tocarConfirma();
+    votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: null, branco: false, nulo: true };
+
+    avancarEtapa();
+    return 0;
+};
+
+const correct = () => {
+    resetarCampo();
+    return 0;
+};
 
 const white = () => {
     numeroDigitado.value = '';
     candidatoSelecionado.value = null;
     votoEmBranco.value = true;
     return 0;
-}
+};
+
+// ─────────────────────────────────────────────
+// Computed para exibição
+// ─────────────────────────────────────────────
+
+// Mostra aviso "NÚMERO ERRADO" somente quando já digitou dígitos suficientes
+const mostrarNulo = computed(() =>
+    !votoEmBranco.value &&
+    !candidatoSelecionado.value &&
+    numeroDigitado.value.length === digitosEsperados.value
+);
+
+// Mostra aviso parcial enquanto digita mas número ainda não completo e não encontrado
+const mostrarDigitando = computed(() =>
+    !votoEmBranco.value &&
+    !candidatoSelecionado.value &&
+    numeroDigitado.value.length > 0 &&
+    numeroDigitado.value.length < digitosEsperados.value
+);
+
+// Progresso: ex "3 / 6"
+const progressoLabel = computed(() =>
+    `${etapaIndex.value + 1} / ${sequencia.value.length}`
+);
 </script>
 
 <template>
     <div class="urna-dispositivo">
-        
+
         <div class="urna-header">
             <div class="justica-eleitoral">
                 <span>JUSTIÇA ELEITORAL</span>
@@ -130,60 +258,80 @@ const white = () => {
         </div>
 
         <div class="urna-corpo">
-            <!-- Painel da Tela (Estilo LCD Realista integrado ao seu design antigo) -->
+            <!-- ── TELA ── -->
             <div class="painel">
                 <div class="tela-lcd">
-                    <div class="conteudo-tela">
-                        <div class="dados-voto">
-                            <span class="txt-simulacao">TREINAMENTO</span>
-                            <span class="titulo-voto">SEU VOTO PARA</span>
-                            
-                            <h2 class="cargo-atual">
-                                {{ cargoAtual }}
-                            </h2>
 
-                            <div class="campo-numero">
-                                <span class="label">Número:</span>
-                                <div class="digitos-container">
-                                    <span v-if="votoEmBranco" class="txt-branco-pisca blink">VOTO EM BRANCO</span>
-                                    <span v-else class="digitos-digitados">{{ numeroDigitado }}</span>
+                    <!-- Tela de encerramento -->
+                    <div v-if="votacaoEncerrada" class="tela-encerramento">
+                        <p class="txt-simulacao">TREINAMENTO</p>
+                        <h1 class="txt-fim">FIM</h1>
+                        
+                    </div>
+
+                    <!-- Tela de votação normal -->
+                    <template v-else>
+                        <div class="conteudo-tela">
+                            <div class="dados-voto">
+                                <span class="txt-simulacao">TREINAMENTO — {{ progressoLabel }}</span>
+                                <span class="titulo-voto">SEU VOTO PARA</span>
+
+                                <h2 class="cargo-atual">{{ etapaAtual?.label }}</h2>
+
+                                <div class="campo-numero">
+                                    <span class="label">Número:</span>
+                                    <div class="digitos-container">
+                                        <span v-if="votoEmBranco" class="txt-branco-pisca blink">VOTO EM BRANCO</span>
+                                        <span v-else class="digitos-digitados">{{ numeroDigitado }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Candidato encontrado -->
+                                <div v-if="candidatoSelecionado" class="detalhes-candidato">
+                                    <p><span class="label">Nome:</span> {{ candidatoSelecionado.name }}</p>
+                                    <p><span class="label">Partido:</span> {{ candidatoSelecionado.partido }}</p>
+                                    <p v-if="candidatoSelecionado.slogan" class="slogan-txt">
+                                        <i>"{{ candidatoSelecionado.slogan }}"</i>
+                                    </p>
+                                    <!-- Aviso senador duplicado -->
+                                    <p v-if="senadorDuplicado()" class="voto-nulo-aviso blink">
+                                        ⚠️ MESMO CANDIDATO DA 1ª VAGA — SERÁ ANULADO
+                                    </p>
+                                </div>
+
+                                <!-- Número completo mas não encontrado → NULO -->
+                                <div v-else-if="mostrarNulo" class="detalhes-candidato">
+                                    <p class="voto-nulo-aviso blink">NÚMERO ERRADO — VOTO NULO</p>
+                                </div>
+
+                                <!-- Digitando parcialmente -->
+                                <div v-else-if="mostrarDigitando" class="detalhes-candidato">
+                                    <p class="txt-digitando">
+                                        Digite mais {{ digitosEsperados - numeroDigitado.length }} dígito(s)…
+                                    </p>
                                 </div>
                             </div>
 
-                            <!-- Informações dinâmicas que surgem ao digitar -->
-                            <div v-if="candidatoSelecionado" class="detalhes-candidato">
-                                <p><span class="label">Nome:</span> {{ candidatoSelecionado.name }}</p>
-                                <p><span class="label">Partido:</span> {{ candidatoSelecionado.partido }}</p>
-                                <p v-if="candidatoSelecionado.slogan" class="slogan-txt">
-                                    <i>"{{ candidatoSelecionado.slogan }}"</i>
-                                </p>
-                            </div>
-                            
-                            <!-- Exibição de número não encontrado / Voto Nulo enquanto digita -->
-                            <div v-else-if="numeroDigitado && numeroDigitado.length >= 2" class="detalhes-candidato">
-                                <p class="voto-nulo-aviso blink">NÚMERO ERRADO — VOTO NULO</p>
+                            <!-- Foto -->
+                            <div class="container-foto-candidato">
+                                <div v-if="candidatoSelecionado" class="foto-box">
+                                    <img :src="getImageUrl(candidatoSelecionado.fotoUrl)" :alt="candidatoSelecionado.name" />
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Foto renderizada em tempo real -->
-                        <div class="container-foto-candidato">
-                            <div v-if="candidatoSelecionado" class="foto-box">
-                                <img :src="getImageUrl(candidatoSelecionado.fotoUrl)" :alt="candidatoSelecionado.name" />
-                            </div>
-                        </div>
-                    </div>
+                        <footer class="instrucoes-rodape">
+                            <div class="linha-divisoria"></div>
+                            <p>Aperte a tecla:</p>
+                            <p class="instrucao-linha">🟩 <span class="bold">VERDE</span> para <span class="bold">CONFIRMAR</span></p>
+                            <p class="instrucao-linha">🟧 <span class="bold">LARANJA</span> para <span class="bold">CORRIGIR</span></p>
+                        </footer>
+                    </template>
 
-                    <!-- Instruções fixas da urna oficial na parte inferior da tela -->
-                    <footer class="instrucoes-rodape">
-                        <div class="linha-divisoria"></div>
-                        <p>Aperte a tecla:</p>
-                        <p class="instrucao-linha">🟩 <span class="bold">VERDE</span> para <span class="bold">CONFIRMAR</span></p>
-                        <p class="instrucao-linha">🟧 <span class="bold">LARANJA</span> para <span class="bold">CORRIGIR</span></p>
-                    </footer>
                 </div>
             </div>
 
-            <!-- Mantido o seu Teclado Antigo Intacto -->
+            <!-- ── TECLADO ── -->
             <div class="teclado-container">
                 <div class="teclado-fundo-preto">
                     <div class="numeros-grid">
@@ -200,17 +348,11 @@ const white = () => {
                         <ButtonNumber :digit="0" @click-digit="handleDigit" />
                         <div class="spacer"></div>
                     </div>
-                    
+
                     <div class="acoes-urna">
-                        <ConfirmButton class="whiteButton" :color="'#ffffff'" :action="white">
-                            Branco
-                        </ConfirmButton>
-                        <ConfirmButton class="correctButton" :color="'#e83e35'" :action="correct">
-                            Corrige
-                        </ConfirmButton>
-                        <ConfirmButton class="confirmButton" :color="'#00aa4f'" :action="confirm">
-                            Confirma
-                        </ConfirmButton>
+                        <ConfirmButton class="whiteButton"   :color="'#ffffff'" :action="white">Branco</ConfirmButton>
+                        <ConfirmButton class="correctButton" :color="'#e83e35'" :action="correct">Corrige</ConfirmButton>
+                        <ConfirmButton class="confirmButton" :color="'#00aa4f'" :action="confirm">Confirma</ConfirmButton>
                     </div>
                 </div>
             </div>
@@ -263,7 +405,6 @@ const white = () => {
     align-items: stretch;
 }
 
-/* CONTAINER DA TELA */
 .painel {
     flex: 1.3;
     background-color: #1a1a1a;
@@ -278,9 +419,8 @@ const white = () => {
     display: flex;
 }
 
-/* TELA ESTILO LCD OFICIAL */
 .tela-lcd {
-    background-color: #e2ebd5; /* Tom esverdeado clássico da Urna */
+    background-color: #e2ebd5;
     width: 100%;
     height: 100%;
     padding: 16px;
@@ -293,6 +433,40 @@ const white = () => {
     color: #222;
 }
 
+/* ── Tela de encerramento ── */
+.tela-encerramento {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+.msg-encerramento {
+    font-size: 0.9rem;
+    color: #333;
+}
+.txt-fim {
+    font-size: 4rem;
+    font-weight: bold;
+    letter-spacing: 8px;
+    text-align: center;
+    margin: 10px 0;
+    color: #111;
+}
+.resumo-votos {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.85rem;
+}
+.resumo-votos li { display: flex; gap: 8px; align-items: center; }
+.tag-branco { color: #555; font-style: italic; }
+.tag-nulo   { color: #a00; font-weight: bold; }
+.tag-valido { color: #007a2f; font-weight: bold; }
+
+/* ── Conteúdo da votação ── */
 .conteudo-tela {
     display: flex;
     justify-content: space-between;
@@ -320,8 +494,8 @@ const white = () => {
 }
 
 .cargo-atual {
-    font-size: 1.5rem;
-    margin: 10px 0;
+    font-size: 1.4rem;
+    margin: 8px 0;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -371,11 +545,17 @@ const white = () => {
 .voto-nulo-aviso {
     color: #a00;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-top: 10px;
 }
 
-/* CONTAINER DA FOTO NA TELA */
+.txt-digitando {
+    font-size: 0.85rem;
+    color: #555;
+    font-style: italic;
+    margin-top: 10px;
+}
+
 .container-foto-candidato {
     width: 115px;
     display: flex;
@@ -393,10 +573,9 @@ const white = () => {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(100%) contrast(110%); /* Efeito P&B pixelado */
+    filter: grayscale(100%) contrast(110%);
 }
 
-/* RODAPÉ DA TELA */
 .instrucoes-rodape {
     font-size: 0.72rem;
     color: #333;
@@ -411,15 +590,10 @@ const white = () => {
     margin-bottom: 6px;
 }
 
-.instrucao-linha {
-    margin-left: 2px;
-}
+.instrucao-linha { margin-left: 2px; }
+.bold { font-weight: bold; }
 
-.bold {
-    font-weight: bold;
-}
-
-/* MANUTENÇÃO DOS SEUS ESTILOS ORIGINAIS DO TECLADO */
+/* ── Teclado ── */
 .teclado-container {
     flex: 1;
     display: flex;
@@ -447,9 +621,7 @@ const white = () => {
     justify-items: center;
 }
 
-.spacer {
-    width: 100%;
-}
+.spacer { width: 100%; }
 
 .acoes-urna {
     display: flex;
@@ -471,24 +643,14 @@ const white = () => {
     justify-content: center;
 }
 
-.confirmButton {
-    height: 56px !important;
-}
+.confirmButton  { height: 56px !important; }
+.whiteButton    { height: 46px !important; }
+.correctButton  { height: 46px !important; }
 
-.whiteButton {
-    height: 46px !important;
-}
-
-.correctButton {
-    height: 46px !important;
-}
-
-.blink {
-    animation: blink-animation 1s steps(2, start) infinite;
-}
+.blink { animation: blink-animation 1s steps(2, start) infinite; }
 @keyframes blink-animation { to { visibility: hidden; } }
 
-/* Responsividade original mantida */
+/* ── Responsividade ── */
 @media (orientation: landscape) and (max-width: 1024px) {
     .urna-dispositivo { max-width: 95%; padding: 15px; }
     .urna-corpo { gap: 15px; }
@@ -503,7 +665,6 @@ const white = () => {
     .urna-dispositivo { transform: scale(0.72); margin-bottom: -100px; }
 }
 @media (orientation: portrait) {
-    /* Estilos portrait originais preservados */
     .urna-dispositivo { padding: 20px; max-width: 480px; margin: 0 auto; }
     .urna-header { display: none; }
     .urna-corpo { flex-direction: column; gap: 25px; }
@@ -513,7 +674,7 @@ const white = () => {
     .numeros-grid { gap: 12px; width: 100%; max-width: 220px; justify-self: end; }
     .acoes-urna { flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; height: 100%; width: 100%; }
     .confirmButton { flex: 3 !important; min-height: 75px !important; display: flex; align-items: start; padding-top: 10px !important; max-width: 80px; }
-    .whiteButton { flex: 1 !important; min-height: 45px !important; }
+    .whiteButton   { flex: 1 !important; min-height: 45px !important; }
     .correctButton { flex: 1 !important; min-height: 45px !important; }
 }
 </style>

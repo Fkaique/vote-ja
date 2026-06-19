@@ -71,18 +71,15 @@ function pularTutorial() {
             </div>
 
             <footer class="tutorial-footer modalidade-footer-vazio">
-                <!-- rodapé vazio para manter a altura do modal consistente -->
             </footer>
         </template>
 
-        <!-- TELA DO TUTORIAL (slides) -->
         <template v-else>
             <header class="tutorial-header">
                 <h3>Guia de Votação — Passo {{ currentPage + 1 }} de {{ tutorialPages.length }}</h3>
                 <button class="btn-skip" @click="pularTutorial">Pular Tutorial ×</button>
             </header>
 
-            <!-- Área Central: Visualização da Imagem Atual -->
             <div class="tutorial-viewport">
                 <transition name="slide-fade" mode="out-in">
                     <img 
@@ -94,9 +91,7 @@ function pularTutorial() {
                 </transition>
             </div>
 
-            <!-- Rodapé Dinâmico com Navegação e Indicadores -->
             <footer class="tutorial-footer">
-                <!-- Botão Voltar (Esquerda) -->
                 <button 
                     class="nav-arrow-btn" 
                     :disabled="isFirstPage" 

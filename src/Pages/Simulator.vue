@@ -36,7 +36,6 @@ const todosCandidatos: Candidato[] = Array.isArray(candidatosData)
   ? candidatosData
   : (candidatosData as any).candidatos || [];
 
-// Candidatos filtrados para a colinha — mostra de acordo com a modalidade ativa
 const candidatosDaColinha = () => {
     if (!modalidadeSelecionada.value) return todosCandidatos;
     return todosCandidatos.filter((c) => c.modalidade === modalidadeSelecionada.value);
@@ -366,12 +365,14 @@ const labelModalidade = () => {
     font-weight: bold;
     font-size: 0.9rem;
     white-space: nowrap;
+    color: var(--color-text-contrast);
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .cand-party {
     font-size: 0.75rem;
+    color: var(--color-text-contrast);
     opacity: 0.75;
 }
 
