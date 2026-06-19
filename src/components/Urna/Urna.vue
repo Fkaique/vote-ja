@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import ButtonNumber from './ButtonNumber.vue';
 import ConfirmButton from './ConfirmButton.vue';
 
 import candidatosData from '../../data/candidatos.json';
-import somConfirma from '../../assets/confirma-urna.mp3';
+import somConfirma from '/src/assets/confirma-urna.mp3';
 
 // ─────────────────────────────────────────────
 // Áudio
@@ -84,8 +84,22 @@ const etapaAtual = computed<DefCargo>(() => sequencia.value[etapaIndex.value]);
 const digitosEsperados = computed(() => etapaAtual.value?.digitos ?? 2);
 
 // ─────────────────────────────────────────────
-// Imagens
+// Reset completo ao trocar modalidade
 // ─────────────────────────────────────────────
+function resetarTudo() {
+    etapaIndex.value        = 0;
+    numeroDigitado.value    = '';
+    candidatoSelecionado.value = null;
+    votoEmBranco.value      = false;
+    votosRegistrados.value  = {};
+    votacaoEncerrada.value  = false;
+}
+
+watch(() => props.modalidade, () => {
+    resetarTudo();
+});
+
+
 const imagensCandidatos = import.meta.glob('/src/data/*.{png,jpg,jpeg,svg}', { eager: true });
 
 function getImageUrl(path: string) {
@@ -170,24 +184,27 @@ const confirm = () => {
     if (votoEmBranco.value) {
         tocarConfirma();
         votosRegistrados.value[chave] = { numero: null, candidato: null, branco: true, nulo: false };
-        
+        alert(`✅ Voto em BRANCO confirmado para ${etapa.label}.`);
         avancarEtapa();
         return 0;
     }
 
     // Nenhum número digitado
     if (!numeroDigitado.value) {
+        alert('⚠️ Digite um número ou pressione BRANCO.');
         return 0;
     }
 
     // Número incompleto
     if (numeroDigitado.value.length < digitosEsperados.value) {
+        alert(`⚠️ O número para ${etapa.label} deve ter ${digitosEsperados.value} dígitos.`);
         return 0;
     }
 
     // Senador duplicado → anula automaticamente o 2º voto
     if (senadorDuplicado()) {
         tocarConfirma();
+        alert(`⚠️ Você já votou neste candidato na 1ª vaga.\nO 2º voto no Senador será ANULADO.`);
         votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: null, branco: false, nulo: true };
         avancarEtapa();
         return 0;
@@ -198,7 +215,7 @@ const confirm = () => {
         tocarConfirma();
         const c = candidatoSelecionado.value;
         votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: c, branco: false, nulo: false };
-
+        alert(`✅ Voto confirmado para ${c.name} — ${c.partido}`);
         avancarEtapa();
         return Number(numeroDigitado.value);
     }
@@ -206,7 +223,7 @@ const confirm = () => {
     // Voto nulo (número não encontrado)
     tocarConfirma();
     votosRegistrados.value[chave] = { numero: Number(numeroDigitado.value), candidato: null, branco: false, nulo: true };
-
+    alert(`🚫 Voto NULO confirmado para ${etapa.label}.`);
     avancarEtapa();
     return 0;
 };
@@ -266,7 +283,6 @@ const progressoLabel = computed(() =>
                     <div v-if="votacaoEncerrada" class="tela-encerramento">
                         <p class="txt-simulacao">TREINAMENTO</p>
                         <h1 class="txt-fim">FIM</h1>
-                        
                     </div>
 
                     <!-- Tela de votação normal -->
