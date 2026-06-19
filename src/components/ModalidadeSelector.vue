@@ -40,7 +40,7 @@ const emit = defineEmits<{
     gap: 32px;
     width: 100%;
     background-color: var(--color-background);
-    color: var(--color-text);
+    color: var(--color-branco);
     box-sizing: border-box;
     padding: 16px 0;
     font-family: var(--font-sans-serif);
@@ -85,7 +85,7 @@ const emit = defineEmits<{
     text-align: left;
     width: 100%;
     transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-    color: var(--color-text);
+    color: var(--color-branco);
     font-family: var(--font-sans-serif);
 }
 
