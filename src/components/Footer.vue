@@ -1,6 +1,6 @@
 <template>
     <div class="footer">
-        © VojeJá - 2026, by J.A.R.K.
+        © VoteJá - 2026, by J.A.R.K.
     </div>
 </template>
 
