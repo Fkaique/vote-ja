@@ -34,19 +34,19 @@ Projeto desenvolvido seguindo diretrizes de alto contraste e legibilidade para o
 - [x] Componente `Urna.vue` com teclado interativo.
 
 ### Fase 2: Lógica e Dados (Semanas 3-4)
-- [ ] Implementação de entrada de números e busca de candidatos (mock).
-- [ ] Validação de votos (Nominal, Nulo, Branco).
-- [ ] Fluxo de confirmação e correção.
+- [x] Implementação de entrada de números e busca de candidatos (mock).
+- [x] Validação de votos (Nominal, Nulo, Branco).
+- [x] Fluxo de confirmação e correção.
 
 ### Fase 3: Ciclos e Tutorial (Semanas 5-6)
-- [ ] Alternância entre Ciclo Presidencial e Municipal.
-- [ ] Desenvolvimento do tutorial interativo.
-- [ ] Lista de consulta de candidatos.
+- [x] Alternância entre Ciclo Presidencial e Municipal.
+- [x] Desenvolvimento do tutorial interativo.
+- [x] Lista de consulta de candidatos.
 
 ### Fase 4: Refinamento e Entrega (Semana 7)
-- [ ] Polimento de UI/UX (Acessibilidade Mobile-First).
-- [ ] Implementação do feedback sonoro.
-- [ ] **Deploy final e link público**.
+- [x] Polimento de UI/UX (Acessibilidade Mobile-First).
+- [x] Implementação do feedback sonoro.
+- [x] **Deploy final e link público**.
 
 ## Como rodar
 
