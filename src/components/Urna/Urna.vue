@@ -567,14 +567,12 @@ const progressoLabel = computed(() =>
 }
 
 .container-foto-candidato {
-    width: 115px;
-    display: flex;
-    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .foto-box {
-    width: 105px;
-    height: 140px;
+    width: clamp(70px, 15vw, 105px);
+    height: calc(clamp(70px, 15vw, 105px) * 4 / 3);
     border: 2px solid #111;
     background-color: rgba(0,0,0,0.03);
 }
@@ -678,7 +676,12 @@ const progressoLabel = computed(() =>
     .urna-dispositivo { padding: 20px; max-width: 480px; margin: 0 auto; }
     .urna-header { display: none; }
     .urna-corpo { flex-direction: column; gap: 25px; }
-    .painel { min-height: 260px; flex: none; }
+    .painel { min-height: 260px; flex: none; padding: clamp(6px, 2vw, 14px); }
+    .tela-lcd { padding: clamp(8px, 2.5vw, 16px); }
+    .cargo-atual { font-size: clamp(1rem, 5vw, 1.4rem); margin: 4px 0; }
+    .digitos-digitados { font-size: clamp(1.4rem, 6vw, 2.2rem); }
+    .detalhes-candidato { font-size: clamp(0.75rem, 3vw, 0.95rem); gap: 3px; }
+    .instrucoes-rodape { font-size: clamp(0.55rem, 2vw, 0.72rem); }
     .teclado-container { max-width: 100%; display: flex; justify-content: flex-end; padding-right: 10px; }
     .teclado-fundo-preto { max-width: 340px; width: 100%; background-color: transparent; box-shadow: none; padding: 0; display: grid; grid-template-columns: 2.2fr 1fr; gap: 15px; }
     .numeros-grid { gap: 12px; width: 100%; max-width: 220px; justify-self: end; }
